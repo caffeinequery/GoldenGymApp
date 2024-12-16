@@ -18,7 +18,7 @@ public class GymClient {
     }
 
     public GymClient(String clientFirstName, String clientSurname, int clientMembership) {
-        this.setFirst_name(clientFirstName);
+        this.setFirstName(clientFirstName);
         this.setSurname(clientSurname);
         this.setMembership(clientMembership);
     }
@@ -36,7 +36,7 @@ public class GymClient {
         this.clientId = clientId;
     }
 
-    public void setFirst_name(String clientFirstName) {
+    public void setFirstName(String clientFirstName) {
         if(clientFirstName.isEmpty()) {
             throw new IllegalArgumentException("Client first name can't be empty: " + clientFirstName);
         }
@@ -63,7 +63,7 @@ public class GymClient {
         return clientId;
     }
 
-    public String getFirst_name() {
+    public String getFirstName() {
         return clientFirstName;
     }
 
