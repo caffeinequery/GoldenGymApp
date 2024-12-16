@@ -2,7 +2,7 @@ package golden_gym_app.domain;
 
 import java.util.Objects;
 
-public class Client {
+public class GymClient {
     // ATTRIBUTES ------------------------------------------
     private int clientId;
     private String clientFirstName;
@@ -11,19 +11,19 @@ public class Client {
 
     // METHODS ---------------------------------------------
     // Constructor methods +++++++++++++++++++++++++++++++++
-    public Client() {}
+    public GymClient() {}
 
-    public Client(int clientId) {
+    public GymClient(int clientId) {
         this.clientId = clientId;
     }
 
-    public Client(String clientFirstName, String clientSurname, int clientMembership) {
+    public GymClient(String clientFirstName, String clientSurname, int clientMembership) {
         this.setFirst_name(clientFirstName);
         this.setSurname(clientSurname);
         this.setMembership(clientMembership);
     }
 
-    public Client(int clientId, String clientFirstName, String clientSurname, int clientMembership) {
+    public GymClient(int clientId, String clientFirstName, String clientSurname, int clientMembership) {
         this(clientFirstName, clientSurname, clientMembership); // This is a call to the constructor where it's just needed the first name, surname, and membership number of the client as arguments.
         this.setId(clientId);
     }
@@ -90,7 +90,7 @@ public class Client {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o;
+        GymClient client = (GymClient) o;
         return clientId == client.clientId && clientMembership == client.clientMembership && Objects.equals(clientFirstName, client.clientFirstName) && Objects.equals(clientSurname, client.clientSurname);
     }
 
