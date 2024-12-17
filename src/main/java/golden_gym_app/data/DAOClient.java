@@ -100,7 +100,6 @@ public class DAOClient implements IDAOClient {
             return true;
         } catch(Exception e) {
             System.out.println("An error has occurred while adding the client: " + e.getMessage());
-
         } finally {
             try {
                 con.close();
@@ -114,6 +113,32 @@ public class DAOClient implements IDAOClient {
 
     @Override
     public boolean modifyClient(GymClient client) {
+        PreparedStatement ps;
+        Connection con = getConnection();
+        var sql = "UPDATE client SET client_first_name=?, client_surname=?, client_membership=? " +
+                "WHERE client_id=?";
+
+        try {
+            ps = con.prepareStatement(sql);
+
+            ps.setString(1, client.getFirstName());
+            ps.setString(2, client.getSurname());
+            ps.setInt(3, client.getMembership());
+            ps.setInt(4, client.getId());
+
+            ps.execute();
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("An error has occurred while modifying the client: " + e.getMessage());
+        } finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("An error has occurred while closing the connection to the db: " + e.getMessage());
+            }
+        }
+
         return false;
     }
 
@@ -142,12 +167,21 @@ public class DAOClient implements IDAOClient {
         // }
 
         // Add client
-        var newClient = new GymClient("Daniel", "Ortiz", 400);
-        var added = daoClient.addClient(newClient);
-        if(added) {
-            System.out.println("\nClient successfully added: " + newClient);
+        // var newClient = new GymClient("Daniel", "Ortiz", 400);
+        // var added = daoClient.addClient(newClient);
+        // if(added) {
+        //     System.out.println("\nClient successfully added: " + newClient);
+        // } else {
+        //     System.out.println("\nClient couldn't be added: " + newClient);
+        // }
+
+        // Modify client
+        var modifiedClient = new GymClient(6, "Carlos Daniel", "Ortiz", 400);
+        var modified = daoClient.modifyClient(modifiedClient);
+        if(modified) {
+            System.out.println("\nClient successfully modified: " + modifiedClient);
         } else {
-            System.out.println("\nClient couldn't be added: " + newClient);
+            System.out.println("\nCouldn't modify client: " + modifiedClient);
         }
 
         System.out.println("\n*** Listing clients ***");
