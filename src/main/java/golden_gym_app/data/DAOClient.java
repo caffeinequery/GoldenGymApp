@@ -115,12 +115,11 @@ public class DAOClient implements IDAOClient {
     public boolean modifyClient(GymClient client) {
         PreparedStatement ps;
         Connection con = getConnection();
-        var sql = "UPDATE client SET client_first_name=?, client_surname=?, client_membership=? " +
-                "WHERE client_id=?";
+        var sql = "UPDATE client SET client_first_name = ?, client_surname = ?, client_membership = ? " +
+                "WHERE client_id = ?";
 
         try {
             ps = con.prepareStatement(sql);
-
             ps.setString(1, client.getFirstName());
             ps.setString(2, client.getSurname());
             ps.setInt(3, client.getMembership());
@@ -144,6 +143,28 @@ public class DAOClient implements IDAOClient {
 
     @Override
     public boolean deleteClient(GymClient client) {
+        PreparedStatement ps;
+        Connection con = getConnection();
+        String sql = "DELETE FROM client WHERE client_id = ?";
+
+        try {
+            ps = con.prepareStatement(sql);
+
+            ps.setInt(1, client.getId());
+
+            ps.execute();
+
+            return true;
+        } catch(Exception e) {
+            System.out.println("An error has occurred while deleting the client: " + e.getMessage());
+        } finally {
+            try {
+                con.close();
+            } catch(Exception e) {
+                System.out.println("An error has occurred while closing the connection to the db: " + e.getMessage());
+            }
+        }
+
         return false;
     }
 
@@ -176,12 +197,21 @@ public class DAOClient implements IDAOClient {
         // }
 
         // Modify client
-        var modifiedClient = new GymClient(6, "Carlos Daniel", "Ortiz", 400);
-        var modified = daoClient.modifyClient(modifiedClient);
-        if(modified) {
-            System.out.println("\nClient successfully modified: " + modifiedClient);
+        // var modifiedClient = new GymClient(6, "Carlos Daniel", "Ortiz", 400);
+        // var modified = daoClient.modifyClient(modifiedClient);
+        // if(modified) {
+        //     System.out.println("\nClient successfully modified: " + modifiedClient);
+        // } else {
+        //     System.out.println("\nCouldn't modify client: " + modifiedClient);
+        // }
+
+        // Delete client
+        var clientToDelete = new GymClient(6);
+        var deleted = daoClient.deleteClient(clientToDelete);
+        if(deleted) {
+            System.out.println("Client successfully deleted: " + clientToDelete);
         } else {
-            System.out.println("\nCouldn't modify client: " + modifiedClient);
+            System.out.println("Couldn't delete client: " + clientToDelete);
         }
 
         System.out.println("\n*** Listing clients ***");
