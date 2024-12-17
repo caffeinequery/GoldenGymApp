@@ -47,6 +47,36 @@ public class DAOClient implements IDAOClient {
 
     @Override
     public boolean searchClientById(GymClient client) {
+        PreparedStatement ps;
+        ResultSet rs;
+        Connection con = getConnection();
+        String sql = "SELECT * FROM client WHERE client_id = ?"; // The "?" works as a placeholder.
+        // The "?" placeholder will be replaced by the value set with ps.setInt(1, client.getId()).
+
+        try {
+            ps = con.prepareStatement(sql);
+            // ps.setInt(index, value): assigns the specified value to the placeholder at the given index in the SQL query.
+            ps.setInt(1, client.getId()); // In this case, it replaces the first "?" placeholder in the SQL query (sql) with the value of client.getId().
+            rs = ps.executeQuery();
+
+            if(rs.next()) {
+                client.setFirstName(rs.getString("client_first_name"));
+                client.setSurname(rs.getString("client_surname"));
+                client.setMembership(rs.getInt("client_membership"));
+                // Returns true since a register with the specified ID was found.
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("An error has occurred while searching client by ID: " + e.getMessage());
+        } finally {
+            try {
+                con.close();
+            } catch(Exception e) {
+                System.out.println("An error has occurred while closing the connection to the db: " + e.getMessage());
+            }
+        }
+
+        // In case no register was found by the entered ID, it returns false.
         return false;
     }
 
@@ -66,10 +96,22 @@ public class DAOClient implements IDAOClient {
     }
 
     public static void main(String[] args) {
-        // List clients
-        System.out.println("*** Listing clients ***");
+        // Creates an instance of the DAOClient class in order to test its methods.
         IDAOClient daoClient = new DAOClient();
-        var clients = daoClient.listClients();
-        clients.forEach(System.out::println);
+
+        // List clients
+        // System.out.println("*** Listing clients ***");
+        // var clients = daoClient.listClients();
+        // clients.forEach(System.out::println);
+
+        // Search client by ID
+        var client1 = new GymClient(3);
+        System.out.println("Client before search: " + client1 + "\n");
+        var found = daoClient.searchClientById(client1);
+        if(found) {
+            System.out.println("Client was found: " + client1);
+        } else {
+            System.out.println("Didn't found client with ID: " + client1.getId());
+        }
     }
 }
