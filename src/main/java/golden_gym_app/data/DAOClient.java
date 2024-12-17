@@ -17,7 +17,7 @@ public class DAOClient implements IDAOClient {
     public List<GymClient> listClients() {
         List<GymClient> clients = new ArrayList<>();
         PreparedStatement ps; // Prepares the SQL query to be executed on the database with parameters (if any).
-        ResultSet rs; // Stores the result set returned by the query execution.
+        ResultSet rs; // Stores the result set returned by the query execution. Used when you retrieve info.
         Connection con = getConnection();
 
         var sql = "SELECT * FROM client ORDER BY client_id";
@@ -54,6 +54,7 @@ public class DAOClient implements IDAOClient {
         // The "?" placeholder will be replaced by the value set with ps.setInt(1, client.getId()).
 
         try {
+
             ps = con.prepareStatement(sql);
             // ps.setInt(index, value): assigns the specified value to the placeholder at the given index in the SQL query.
             ps.setInt(1, client.getId()); // In this case, it replaces the first "?" placeholder in the SQL query (sql) with the value of client.getId().
@@ -63,6 +64,7 @@ public class DAOClient implements IDAOClient {
                 client.setFirstName(rs.getString("client_first_name"));
                 client.setSurname(rs.getString("client_surname"));
                 client.setMembership(rs.getInt("client_membership"));
+
                 // Returns true since a register with the specified ID was found.
                 return true;
             }
@@ -82,6 +84,31 @@ public class DAOClient implements IDAOClient {
 
     @Override
     public boolean addClient(GymClient client) {
+        PreparedStatement ps;
+        Connection con = getConnection();
+        String sql = "INSERT INTO client(client_first_name, client_surname, client_membership) "
+                + "VALUES(?, ?, ?)";
+
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setString(1, client.getFirstName());
+            ps.setString(2, client.getSurname());
+            ps.setInt(3, client.getMembership());
+
+            ps.execute();
+
+            return true;
+        } catch(Exception e) {
+            System.out.println("An error has occurred while adding the client: " + e.getMessage());
+
+        } finally {
+            try {
+                con.close();
+            } catch (Exception e) {
+                System.out.println("An error has occurred while closing the connection to the db: " + e.getMessage());
+            }
+        }
+
         return false;
     }
 
@@ -105,13 +132,26 @@ public class DAOClient implements IDAOClient {
         // clients.forEach(System.out::println);
 
         // Search client by ID
-        var client1 = new GymClient(3);
-        System.out.println("Client before search: " + client1 + "\n");
-        var found = daoClient.searchClientById(client1);
-        if(found) {
-            System.out.println("Client was found: " + client1);
+        // var client1 = new GymClient(3);
+        // System.out.println("Client before search: " + client1 + "\n");
+        // var found = daoClient.searchClientById(client1);
+        // if(found) {
+        //     System.out.println("Client was found: " + client1);
+        // } else {
+        //     System.out.println("Didn't found client with ID: " + client1.getId());
+        // }
+
+        // Add client
+        var newClient = new GymClient("Daniel", "Ortiz", 400);
+        var added = daoClient.addClient(newClient);
+        if(added) {
+            System.out.println("\nClient successfully added: " + newClient);
         } else {
-            System.out.println("Didn't found client with ID: " + client1.getId());
+            System.out.println("\nClient couldn't be added: " + newClient);
         }
+
+        System.out.println("\n*** Listing clients ***");
+        var clients = daoClient.listClients();
+        clients.forEach(System.out::println);
     }
 }
