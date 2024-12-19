@@ -149,12 +149,11 @@ public class DAOClient implements IDAOClient {
 
         try {
             ps = con.prepareStatement(sql);
-
             ps.setInt(1, client.getId());
 
-            ps.execute();
+            int rowsAffected = ps.executeUpdate();
 
-            return true;
+            return rowsAffected > 0;
         } catch(Exception e) {
             System.out.println("An error has occurred while deleting the client: " + e.getMessage());
         } finally {
@@ -166,56 +165,5 @@ public class DAOClient implements IDAOClient {
         }
 
         return false;
-    }
-
-    public static void main(String[] args) {
-        // Creates an instance of the DAOClient class in order to test its methods.
-        IDAOClient daoClient = new DAOClient();
-
-        // List clients
-        // System.out.println("*** Listing clients ***");
-        // var clients = daoClient.listClients();
-        // clients.forEach(System.out::println);
-
-        // Search client by ID
-        // var client1 = new GymClient(3);
-        // System.out.println("Client before search: " + client1 + "\n");
-        // var found = daoClient.searchClientById(client1);
-        // if(found) {
-        //     System.out.println("Client was found: " + client1);
-        // } else {
-        //     System.out.println("Didn't found client with ID: " + client1.getId());
-        // }
-
-        // Add client
-        // var newClient = new GymClient("Daniel", "Ortiz", 400);
-        // var added = daoClient.addClient(newClient);
-        // if(added) {
-        //     System.out.println("\nClient successfully added: " + newClient);
-        // } else {
-        //     System.out.println("\nClient couldn't be added: " + newClient);
-        // }
-
-        // Modify client
-        // var modifiedClient = new GymClient(6, "Carlos Daniel", "Ortiz", 400);
-        // var modified = daoClient.modifyClient(modifiedClient);
-        // if(modified) {
-        //     System.out.println("\nClient successfully modified: " + modifiedClient);
-        // } else {
-        //     System.out.println("\nCouldn't modify client: " + modifiedClient);
-        // }
-
-        // Delete client
-        var clientToDelete = new GymClient(6);
-        var deleted = daoClient.deleteClient(clientToDelete);
-        if(deleted) {
-            System.out.println("Client successfully deleted: " + clientToDelete);
-        } else {
-            System.out.println("Couldn't delete client: " + clientToDelete);
-        }
-
-        System.out.println("\n*** Listing clients ***");
-        var clients = daoClient.listClients();
-        clients.forEach(System.out::println);
     }
 }
